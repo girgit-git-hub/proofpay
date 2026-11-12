@@ -1,0 +1,1 @@
+{"name":"@proofpay/workflows","private":true,"type":"module","scripts":{"build":"tsc -p tsconfig.json","start":"node dist/index.js"},"dependencies":{"@renderinc/sdk":"^1.7.0"},"devDependencies":{"typescript":"^5.9.3","@types/node":"^24.10.0"}}
