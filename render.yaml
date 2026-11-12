@@ -1,19 +1,82 @@
 services:
+  # =========================
+  # PROOFPAY API
+  # =========================
   - type: web
     name: proofpay-api
     runtime: node
     rootDir: apps/api
+
     buildCommand: npm install && npx prisma generate --schema ../../prisma/schema.prisma && npm run build
+
     startCommand: npm start
+
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: proofpay-db
+          property: connectionString
+
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+
+      - key: GEMINI_API_KEY
+        sync: false
+
+      - key: API_PORT
+        value: "10000"
+
+      - key: WEB_ORIGIN
+        fromService:
+          type: web
+          name: proofpay-web
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # =========================
+  # PROOFPAY FRONTEND
+  # =========================
   - type: web
-    runtime: node
     name: proofpay-web
+    runtime: static
     rootDir: apps/web
+
     buildCommand: npm install && npm run build
+
     staticPublishPath: dist
+
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: proofpay-api
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # =========================
+  # PROOFPAY VERIFICATION WORKFLOW
+  # =========================
   - type: workflow
     name: proofpay-verification
     runtime: node
+    region: oregon
     rootDir: workflows
+
     buildCommand: npm install && npm run build
+
     startCommand: npm start
+
+# =========================
+# POSTGRES DATABASE
+# =========================
+databases:
+  - name: proofpay-db
+    databaseName: proofpay
+    user: proofpay
+    plan: free
