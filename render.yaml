@@ -5,7 +5,7 @@ services:
     rootDir: apps/api
     buildCommand: npm install && npx prisma generate --schema ../../prisma/schema.prisma && npm run build
     startCommand: npm start
-  - type: static
+  - type: web
     name: proofpay-web
     rootDir: apps/web
     buildCommand: npm install && npm run build
